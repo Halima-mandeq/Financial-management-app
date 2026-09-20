@@ -64,37 +64,14 @@ A modern, comprehensive personal and business financial management application d
 Clone the repository and install dependencies:
 ```bash
 npm install
-```
 
-### 2. Environment Configuration
-Create a `.env` file based on `.env.example`:
-```bash
-cp .env.example .env
-```
-Provide your Google Gemini API key:
-```env
-GEMINI_API_KEY="your_gemini_api_key_here"
-```
 
-### 3. Running in Development Mode
-Start the local development server:
-```bash
-npm run dev
+
+
 ```
-Open your browser and navigate to `http://localhost:3000`.
-
-### 4. Building for Production
-Create an optimized production build:
-```bash
-npm run build
-npm start
-```
-
----
-
 ## 📁 Directory Structure
 
-```text
+
 ├── src/
 │   ├── components/            # Reusable UI components (Modals, Charts, Cards)
 │   │   ├── SummaryCards.tsx
@@ -122,10 +99,7 @@ npm start
 
 ## 🔒 Security & Best Practices
 - **Data Protection**: Real-time cloud persistence backed by Google Cloud Firestore with security rules.
-- **Server-Side API Keys**: Sensitive API credentials such as the Gemini API key are kept strictly on the Node.js backend server (`server.ts`) and never exposed to the client browser.
-
----
 
 ## 📄 License & Attribution
 - **Application**: Income Management System (Maareynta Dakhliga)
-- **Engineered with**: Google AI Studio & Antigravity
+
