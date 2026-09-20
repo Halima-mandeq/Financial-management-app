@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Settings, Plus, Trash2, RotateCcw, Home, Building2, User, UserCheck, Moon, Sun, Tag, Sparkles } from 'lucide-react';
+import { X, Settings, Plus, Trash2, RotateCcw, Home, Building2, User, UserCheck, Moon, Sun, Tag, Sparkles, Shield, Lock } from 'lucide-react';
 import { BudgetConfig } from '../types';
 
 interface BudgetSettingsModalProps {
@@ -17,6 +17,8 @@ interface BudgetSettingsModalProps {
   onToggleTheme?: (theme: 'light' | 'dark') => void;
   appName?: string;
   onUpdateAppName?: (name: string) => void;
+  autoLockMinutes?: number;
+  onUpdateAutoLockMinutes?: (minutes: number) => void;
 }
 
 export const BudgetSettingsModal: React.FC<BudgetSettingsModalProps> = ({
@@ -33,9 +35,12 @@ export const BudgetSettingsModal: React.FC<BudgetSettingsModalProps> = ({
   onToggleTheme,
   appName = 'Maareynta Dakhliga',
   onUpdateAppName,
+  autoLockMinutes = 3,
+  onUpdateAutoLockMinutes,
 }) => {
   const [roleInput, setRoleInput] = useState(userRole);
   const [currentAppName, setCurrentAppName] = useState(appName);
+  const [selectedAutoLock, setSelectedAutoLock] = useState<number>(autoLockMinutes);
   const [monthlyLimit, setMonthlyLimit] = useState(config.monthlyLimit.toString());
   const [currency, setCurrency] = useState(config.currency);
   const [familyMembers, setFamilyMembers] = useState<string[]>(config.familyMembers);
@@ -77,6 +82,9 @@ export const BudgetSettingsModal: React.FC<BudgetSettingsModalProps> = ({
     }
     if (onUpdateAppName && currentAppName.trim()) {
       onUpdateAppName(currentAppName.trim());
+    }
+    if (onUpdateAutoLockMinutes) {
+      onUpdateAutoLockMinutes(selectedAutoLock);
     }
     onClose();
   };
@@ -380,6 +388,45 @@ export const BudgetSettingsModal: React.FC<BudgetSettingsModalProps> = ({
                 <Plus className="w-3.5 h-3.5" />
                 Add
               </button>
+            </div>
+          </div>
+
+          {/* Auto-Lock / Inactivity Security Settings */}
+          <div className="bg-slate-50/80 dark:bg-slate-800/60 p-3.5 rounded-xl border border-slate-200/80 dark:border-slate-700/80">
+            <div className="flex items-center justify-between mb-1.5">
+              <div className="flex items-center gap-1.5">
+                <Lock className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                <label className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                  Qufulka Tooska ah (Auto-Lock)
+                </label>
+              </div>
+              <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">
+                {selectedAutoLock === 0 ? 'Damiyeysan' : `${selectedAutoLock} Daqiiqo`}
+              </span>
+            </div>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 mb-2 leading-relaxed">
+              Haddii aad nidaamka wax yar ka maqnaato ama aad ka mashquusho, wuxuu isku xidhayaa quful amni si cid kale aysan u arkin xogtaada.
+            </p>
+            <div className="grid grid-cols-4 gap-1.5">
+              {[
+                { min: 1, label: '1 Daqiiqo' },
+                { min: 3, label: '3 Daqiiqo' },
+                { min: 5, label: '5 Daqiiqo' },
+                { min: 10, label: '10 Daqiiqo' },
+              ].map((opt) => (
+                <button
+                  key={opt.min}
+                  type="button"
+                  onClick={() => setSelectedAutoLock(opt.min)}
+                  className={`py-1.5 px-1 rounded-lg text-[11px] font-bold border transition-all cursor-pointer text-center ${
+                    selectedAutoLock === opt.min
+                      ? 'border-emerald-500 bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-200 shadow-2xs'
+                      : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-800'
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              ))}
             </div>
           </div>
 

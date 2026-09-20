@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Settings, Wallet, LogOut, Home, Building2, User, UserCheck, Moon, Sun, Target, Cloud, CloudCheck, Smartphone } from 'lucide-react';
+import { Plus, Settings, Wallet, LogOut, Home, Building2, User, UserCheck, Moon, Sun, Target, Cloud, CloudCheck, Smartphone, Lock } from 'lucide-react';
 import { Transaction, BudgetConfig, UserProfile, SavingsGoal } from './types';
 import {
   DEFAULT_BUDGET_CONFIG,
@@ -30,6 +30,7 @@ import { LoginPage } from './components/LoginPage';
 import { FinancialTipCard } from './components/FinancialTipCard';
 import { NotificationCenter } from './components/NotificationCenter';
 import { InstallAppModal } from './components/InstallAppModal';
+import { InactivityLockModal } from './components/InactivityLockModal';
 import { formatMoney } from './utils/formatters';
 
 const STORAGE_KEYS = {
@@ -38,6 +39,7 @@ const STORAGE_KEYS = {
   USER: 'xaliimo_saved_user',
   THEME: 'xaliimo_theme_preference',
   GOALS: 'xaliimo_savings_goals_v1',
+  AUTO_LOCK: 'xaliimo_auto_lock_minutes',
 };
 
 const DEFAULT_USER: UserProfile = {
@@ -152,6 +154,53 @@ export default function App() {
   const [isDepositModalOpen, setIsDepositModalOpen] = useState(false);
   const [selectedGoalForDeposit, setSelectedGoalForDeposit] = useState<SavingsGoal | null>(null);
   const [isInstallModalOpen, setIsInstallModalOpen] = useState(false);
+
+  // Auto-Lock Inactivity Security State (default 3 minutes of inactivity)
+  const [autoLockMinutes, setAutoLockMinutes] = useState<number>(() => {
+    const saved = localStorage.getItem(STORAGE_KEYS.AUTO_LOCK);
+    if (saved !== null) {
+      const parsed = parseInt(saved, 10);
+      return isNaN(parsed) ? 3 : parsed;
+    }
+    return 3;
+  });
+  const [isLockedByInactivity, setIsLockedByInactivity] = useState(false);
+
+  // Inactivity detection timer
+  useEffect(() => {
+    if (!currentUser || autoLockMinutes <= 0 || isLockedByInactivity) return;
+
+    let timeoutId: NodeJS.Timeout;
+
+    const resetTimer = () => {
+      clearTimeout(timeoutId);
+      // autoLockMinutes in milliseconds
+      timeoutId = setTimeout(() => {
+        setIsLockedByInactivity(true);
+      }, autoLockMinutes * 60 * 1000);
+    };
+
+    // Events to monitor user activity
+    const activityEvents = ['mousedown', 'mousemove', 'keydown', 'scroll', 'touchstart', 'click'];
+    activityEvents.forEach((event) => {
+      window.addEventListener(event, resetTimer, { passive: true });
+    });
+
+    // Start initial timer
+    resetTimer();
+
+    return () => {
+      clearTimeout(timeoutId);
+      activityEvents.forEach((event) => {
+        window.removeEventListener(event, resetTimer);
+      });
+    };
+  }, [currentUser, autoLockMinutes, isLockedByInactivity]);
+
+  const handleUpdateAutoLockMinutes = (minutes: number) => {
+    setAutoLockMinutes(minutes);
+    localStorage.setItem(STORAGE_KEYS.AUTO_LOCK, minutes.toString());
+  };
 
   // App Title / Branding State
   const [appName, setAppName] = useState<string>(() => {
@@ -533,6 +582,17 @@ export default function App() {
                 )}
               </button>
 
+              {/* Quick Screen Lock Button */}
+              <button
+                type="button"
+                id="quick-screen-lock-btn"
+                onClick={() => setIsLockedByInactivity(true)}
+                title="Quful Shaashadda Hadda (Lock Screen Now)"
+                className="flex items-center justify-center w-7 h-7 sm:w-9 sm:h-9 text-amber-600 dark:text-amber-400 bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/60 dark:hover:bg-amber-900/60 rounded-lg sm:rounded-xl transition-colors cursor-pointer border border-amber-200/80 dark:border-amber-800/80 shadow-2xs"
+              >
+                <Lock className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              </button>
+
               {/* Settings Button */}
               <button
                 onClick={() => setIsSettingsModalOpen(true)}
@@ -791,7 +851,22 @@ export default function App() {
         onToggleTheme={setTheme}
         appName={appName}
         onUpdateAppName={handleUpdateAppName}
+        autoLockMinutes={autoLockMinutes}
+        onUpdateAutoLockMinutes={handleUpdateAutoLockMinutes}
       />
+
+      {/* Inactivity Security Auto-Lock Modal */}
+      {isLockedByInactivity && currentUser && (
+        <InactivityLockModal
+          currentUser={currentUser}
+          idleMinutes={autoLockMinutes}
+          onUnlock={() => setIsLockedByInactivity(false)}
+          onLogout={() => {
+            setIsLockedByInactivity(false);
+            handleConfirmLogout();
+          }}
+        />
+      )}
 
       {/* PWA / APK Mobile App Install Modal */}
       <InstallAppModal
