@@ -63,12 +63,7 @@ A modern, comprehensive personal and business financial management application d
 ### 1. Installation
 Clone the repository and install dependencies:
 ```bash
-npm install
-
-
-
-
----
+npm instal
 
 ## 📁 Directory Structure
 
