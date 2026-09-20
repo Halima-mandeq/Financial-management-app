@@ -68,10 +68,11 @@ npm install
 
 
 
-```
+---
+
 ## 📁 Directory Structure
 
-
+```text
 ├── src/
 │   ├── components/            # Reusable UI components (Modals, Charts, Cards)
 │   │   ├── SummaryCards.tsx
