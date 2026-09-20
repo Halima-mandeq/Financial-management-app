@@ -1,0 +1,6 @@
+{
+  "name": "Maareynta Dakhliga",
+  "description": "Nidaam casri ah oo lagu maareeyo dakhliga, kharashaadka, kaydka, iyo miisaaniyadda qoyska iyo ganacsiga.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

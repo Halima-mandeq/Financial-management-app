@@ -1,0 +1,54 @@
+{
+  "schemaVersion": "1.0.0",
+  "entities": {
+    "users": {
+      "fields": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "role": { "type": "string" },
+        "accountType": { "type": "string" },
+        "avatar": { "type": "string" },
+        "lastActive": { "type": "string" }
+      }
+    },
+    "transactions": {
+      "fields": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "accountType": { "type": "string" },
+        "type": { "type": "string" },
+        "amount": { "type": "number" },
+        "category": { "type": "string" },
+        "date": { "type": "string" },
+        "person": { "type": "string" },
+        "note": { "type": "string" },
+        "receipt": { "type": "string" },
+        "syncedAt": { "type": "string" }
+      }
+    },
+    "savingsGoals": {
+      "fields": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "title": { "type": "string" },
+        "targetAmount": { "type": "number" },
+        "currentAmount": { "type": "number" },
+        "deadline": { "type": "string" },
+        "category": { "type": "string" },
+        "icon": { "type": "string" },
+        "color": { "type": "string" },
+        "notes": { "type": "string" },
+        "createdAt": { "type": "string" }
+      }
+    },
+    "budgetConfigs": {
+      "fields": {
+        "userId": { "type": "string" },
+        "monthlyLimit": { "type": "number" },
+        "currency": { "type": "string" },
+        "familyMembers": { "type": "array" }
+      }
+    }
+  }
+}
