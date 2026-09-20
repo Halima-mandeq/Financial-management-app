@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Settings, Wallet, LogOut, Home, Building2, User, UserCheck, Moon, Sun, Target, Cloud, CloudCheck, Smartphone, Lock } from 'lucide-react';
+import { Plus, Settings, Wallet, LogOut, Home, Building2, User, UserCheck, Moon, Sun, Target, Cloud, CloudCheck, Lock } from 'lucide-react';
 import { Transaction, BudgetConfig, UserProfile, SavingsGoal } from './types';
 import {
   DEFAULT_BUDGET_CONFIG,
@@ -84,6 +84,7 @@ export default function App() {
   }, [theme]);
 
   // User Authentication State
+  // Default to null so any new visitor or unauthenticated browser session MUST sign in or register
   const [currentUser, setCurrentUser] = useState<UserProfile | null>(() => {
     if (localStorage.getItem('xaliimo_user_logged_out') === 'true') {
       return null;
@@ -92,56 +93,57 @@ export default function App() {
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        if (parsed && parsed.name) return parsed;
+        if (parsed && parsed.name && parsed.id) return parsed;
       } catch {
-        return DEFAULT_USER;
+        return null;
       }
     }
-    return DEFAULT_USER;
+    // No saved user session: require login
+    return null;
   });
 
   // Load state from localStorage or category-specific defaults
   const [transactions, setTransactions] = useState<Transaction[]>(() => {
-    const activeUser = currentUser || DEFAULT_USER;
-    const txKey = getUserTxKey(activeUser);
+    if (!currentUser) return [];
+    const txKey = getUserTxKey(currentUser);
     const saved = localStorage.getItem(txKey);
     if (saved !== null) {
       try {
         return JSON.parse(saved);
       } catch {
-        return GET_INITIAL_TRANSACTIONS_FOR_USER(activeUser);
+        return GET_INITIAL_TRANSACTIONS_FOR_USER(currentUser);
       }
     }
-    return GET_INITIAL_TRANSACTIONS_FOR_USER(activeUser);
+    return GET_INITIAL_TRANSACTIONS_FOR_USER(currentUser);
   });
 
   const [config, setConfig] = useState<BudgetConfig>(() => {
-    const activeUser = currentUser || DEFAULT_USER;
-    const cfgKey = getUserCfgKey(activeUser);
+    if (!currentUser) return DEFAULT_BUDGET_CONFIG;
+    const cfgKey = getUserCfgKey(currentUser);
     const saved = localStorage.getItem(cfgKey);
     if (saved !== null) {
       try {
         return JSON.parse(saved);
       } catch {
-        return GET_INITIAL_CONFIG_FOR_USER(activeUser);
+        return GET_INITIAL_CONFIG_FOR_USER(currentUser);
       }
     }
-    return GET_INITIAL_CONFIG_FOR_USER(activeUser);
+    return GET_INITIAL_CONFIG_FOR_USER(currentUser);
   });
 
   // Savings Goals State
   const [goals, setGoals] = useState<SavingsGoal[]>(() => {
-    const activeUser = currentUser || DEFAULT_USER;
-    const goalsKey = getUserGoalsKey(activeUser);
+    if (!currentUser) return [];
+    const goalsKey = getUserGoalsKey(currentUser);
     const saved = localStorage.getItem(goalsKey);
     if (saved !== null) {
       try {
         return JSON.parse(saved);
       } catch {
-        return GET_INITIAL_GOALS_FOR_USER(activeUser);
+        return GET_INITIAL_GOALS_FOR_USER(currentUser);
       }
     }
-    return GET_INITIAL_GOALS_FOR_USER(activeUser);
+    return GET_INITIAL_GOALS_FOR_USER(currentUser);
   });
 
   // Modals state
@@ -205,9 +207,9 @@ export default function App() {
   // App Title / Branding State
   const [appName, setAppName] = useState<string>(() => {
     const saved = localStorage.getItem('app_brand_name');
-    if (!saved || saved === 'Maareynta Dakhliga ku soo Gala' || saved === 'Xaliimo Finance' || saved === 'Buugga Dhaqaalaha & Xisaab-xidhka Guriga') {
-      localStorage.setItem('app_brand_name', 'Maareynta Dakhliga');
-      return 'Maareynta Dakhliga';
+    if (!saved || saved === 'Maareynta Dakhliga ku soo Gala' || saved === 'Xaliimo Finance' || saved === 'Buugga Dhaqaalaha & Xisaab-xidhka Guriga' || saved === 'Maareynta Dakhliga') {
+      localStorage.setItem('app_brand_name', 'DakhliApp');
+      return 'DakhliApp';
     }
     return saved;
   });
@@ -555,18 +557,6 @@ export default function App() {
                 config={config}
                 onOpenSettings={() => setIsSettingsModalOpen(true)}
               />
-
-              {/* App / APK Install Button */}
-              <button
-                type="button"
-                id="open-app-apk-install-btn"
-                onClick={() => setIsInstallModalOpen(true)}
-                title="Soo dego ama ku shubo Taleefanka / Soo saar APK"
-                className="flex items-center justify-center sm:gap-1.5 px-2 sm:px-3 py-1.5 sm:py-2 text-xs font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:hover:bg-emerald-900/60 rounded-lg sm:rounded-xl transition-colors cursor-pointer border border-emerald-200/80 dark:border-emerald-800/80 shadow-2xs"
-              >
-                <Smartphone className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-600 dark:text-emerald-400" />
-                <span className="text-[11px] sm:text-xs">App / APK</span>
-              </button>
 
               {/* Theme Toggle Button */}
               <button

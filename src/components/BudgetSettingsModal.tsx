@@ -33,7 +33,7 @@ export const BudgetSettingsModal: React.FC<BudgetSettingsModalProps> = ({
   onUpdateUserRole,
   theme = 'light',
   onToggleTheme,
-  appName = 'Maareynta Dakhliga',
+  appName = 'DakhliApp',
   onUpdateAppName,
   autoLockMinutes = 3,
   onUpdateAutoLockMinutes,

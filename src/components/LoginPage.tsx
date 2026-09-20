@@ -298,7 +298,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
           <div>
             <div className="flex items-center gap-2">
               <span className="text-base sm:text-lg font-extrabold text-white tracking-tight bg-gradient-to-r from-white via-slate-100 to-slate-300 bg-clip-text">
-                Income Management
+                DakhliApp
               </span>
               <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 shadow-xs">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
@@ -306,7 +306,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({
               </span>
             </div>
             <p className="text-xs text-slate-400 hidden sm:block font-medium">
-              Budget, Income & Savings Management
+              Maareynta Dakhliga, Kharashaadka & Xisaab-xidhka
             </p>
           </div>
         </div>
